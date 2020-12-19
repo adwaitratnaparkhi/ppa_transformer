@@ -50,6 +50,7 @@ class ConllAttachment(object):
 
     # indices from original sentence (0-based)
     orig_prep_id = -1
+    orig_child_id = -1
     orig_heads_ids = []
     sentence_start_line = -1
 
@@ -66,7 +67,6 @@ class ConllAttachment(object):
             self.heads_next_pos = heads_next_pos
         if sentence:
             self.sentence = sentence
-                
 
     def has_word_vectors(self, word_vectors):
         """
@@ -87,6 +87,8 @@ class ConllAttachment(object):
 
     def set_heads_ids(self, heads_ids):
         self.orig_heads_ids = heads_ids
+    def set_child_id(self, child_id):
+        self.orig_child_id = child_id
 
     def set_sentence_start_line(self, sentence_start_line):
         self.sentence_start_line = sentence_start_line
@@ -149,7 +151,7 @@ def get_pp_attachments_from_wsj_sentence(sentence, max_head_distance, max_child_
                         attachment.set_prep_id(i)
                         attachment.set_heads_ids(heads_ids)
                         attachment.set_sentence_start_line(sentence.start_line)
-
+                        attachment.set_child_id(child_idx-1)
                         # do not filter by word_vectors
                         #if word_vectors and attachment.has_word_vectors(word_vectors):
                             #attachments.append(attachment)
@@ -817,6 +819,7 @@ def write_attachments(attachments, output_pref, get_heads_next=False):
     print 'writing attachments to files with prefix:', output_pref
     g_heads = open(output_pref + '.heads', 'w')
     g_nheads = open(output_pref + '.nheads', 'w')
+
     g_labels = open(output_pref + '.labels', 'w')
     g_pp_words = open(output_pref + '.ppwords', 'w')
     g_pp_parents = open(output_pref + '.ppparents', 'w')
@@ -863,7 +866,11 @@ def write_conll_attachments(attachments, output_pref, use_heads_next=False, use_
         g_heads_next_pos = open(output_pref + '.heads.next.pos', 'w')
 
     g_sentences = codecs.open(output_pref + '.sentences', 'w', encoding='utf-8')
+    g_heads_ids = codecs.open(output_pref + '.id.heads.words', 'w', encoding='utf-8')
+    g_preps_ids = codecs.open(output_pref + '.id.preps.words', 'w', encoding='utf-8')
+    g_children_ids = codecs.open(output_pref + '.id.children.words', 'w', encoding='utf-8')
 
+    g_sentences = codecs.open(output_pref + '.sentences', 'w', encoding='utf-8')
 
     for a in attachments:
         assert(isinstance(a, ConllAttachment))
@@ -878,9 +885,10 @@ def write_conll_attachments(attachments, output_pref, use_heads_next=False, use_
             g_heads_pos.write('\t'.join(a.heads_pos) + '\n')
         if use_heads_next_pos:
             g_heads_next_pos.write('\t'.join(a.heads_next_pos) + '\n')
-        
+        g_heads_ids.write(' '.join(map(str, a.orig_heads_ids)) + '\n')
+        g_preps_ids.write(str(a.orig_prep_id) + '\n')
+        g_children_ids.write(str(a.orig_child_id) + '\n')
         g_sentences.write(" ".join(a.sentence.tokens) + '\n')
-
 
     g_sentences.close()
     g_heads.close()
@@ -894,7 +902,9 @@ def write_conll_attachments(attachments, output_pref, use_heads_next=False, use_
         g_heads_pos.close()
     if use_heads_next_pos:
         g_heads_next_pos.close()
-
+    g_heads_ids.close()
+    g_preps_ids.close()
+    g_children_ids.close()
 
 def filter_attachments_by_max_children_num(attachments, max_child_count):
 
@@ -1065,7 +1075,6 @@ GET_HEADS_NEXT = False
 ONLY_CHILD_GRANDCHILD = False
 # run_spmrl(SPMRL_FILE, OUTPUT_PREF, WORD_VECTORS_FILE, 10, MAX_SPAN, MAX_CHILDREN, False, GET_HEADS_NEXT, ONLY_CHILD_GRANDCHILD)
 #WSJ_FILE = '/home/belinkov/Dropbox/school/arabic-parsing/data/ptb/wsj.22.txt.dep'
-
 #OUTPUT_PREF = '/mnt/scratch/belinkov/pp/data/ptb/wsj.22.txt.dep.pp'
 
 MAX_HEAD_DISTANCE = 10
@@ -1082,11 +1091,10 @@ WSJ_FILE_TR=sys.argv[1]
 WSJ_FILE_TE=sys.argv[2]
 OUTPUT_PREF_TR = sys.argv[3]
 OUTPUT_PREF_TE = sys.argv[4]
-    
-                     
 
 run_wsj(WSJ_FILE_TR, OUTPUT_PREF_TR, '',  MAX_HEAD_DISTANCE, MAX_CHILD_DISTANCE, GET_HEADS_NEXT, GET_HEADS_POS, GET_HEADS_NEXT_POS)
 run_wsj(WSJ_FILE_TE, OUTPUT_PREF_TE, '',  MAX_HEAD_DISTANCE, MAX_CHILD_DISTANCE, GET_HEADS_NEXT, GET_HEADS_POS, GET_HEADS_NEXT_POS)
+
 # MATLAB_PRED_FILE = '/mnt/scratch/belinkov/pp/data/matlab/wsj.2-21.txt.dep.pp.out'
 # MATLAB_INCLUDE_IND_FILE = '/mnt/scratch/belinkov/pp/data/matlab/wsj.2-21.txt.dep.pp.includeInd'
 #run_wsj(WSJ_FILE, OUTPUT_PREF, WORD_VECTORS_FILE, MAX_HEAD_DISTANCE, MAX_CHILD_DISTANCE, GET_HEADS_NEXT, GET_HEADS_POS, GET_HEADS_NEXT_POS, \
