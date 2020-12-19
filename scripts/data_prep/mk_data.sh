@@ -38,11 +38,11 @@ function mkdata1 {
 
 
 # Join sentences to original based on rebuilt dataset
-function mkdata3 {
+function mkdata2 {
 
     for sections in 2-21 23
     do
-	python ./join_sentence_from_rebuilt_data.py  ../data/Belinkov2014/pp-data-english/wsj.${sections}.txt.dep.pp ../data/Belinkov2014/pp-data-english.rebuilt/wsj.${sections}.txt.dep.pp
+	python ./join_sentence_from_rebuilt_data.py  ${DATA_DIR}/wsj.${sections}.txt.dep.pp ${DATA_DIR_REBUILT}/wsj.${sections}.txt.dep.pp
     done
 }
 
@@ -51,4 +51,4 @@ mk_local_copy
 mkdata1
 
 
-#mkdata2
+mkdata2
