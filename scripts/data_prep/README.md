@@ -1,8 +1,12 @@
 # Introduction
 
-This directory contains scripts that can re-build the data from (Belinkov et al, 2014)
+The scripts in this directory re-build the data from (Belinkov et al, 2014), extract additional information from the raw sentence, and re-join that information with the original examples. 
 
-The `extract_pp_attach_for_matlab.py` script was modified to ignore the word vector filter when extracting heads, to print the full sentence context in another file, and to read and write from local file paths.
+The `extract_pp_attach_for_matlab.py` script, originally from (Belinkov et al, 2014), was modified in the following ways:
+* Ignore the word vector filter when extracting heads
+* Print the full sentence context in a separate file
+* Print the index of the heads in a separate file
+
 As this script does not have the original word vector file used in (Belinkov et al, 2014), it cannot produce the exact same training and test instances. 
 It produces more since it does not use a filter.
 
