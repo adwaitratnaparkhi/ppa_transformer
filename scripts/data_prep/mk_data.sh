@@ -42,13 +42,12 @@ function mkdata2 {
 
     for sections in 2-21 23
     do
-	python ./join_sentence_from_rebuilt_data.py  ${DATA_DIR}/wsj.${sections}.txt.dep.pp ${DATA_DIR_REBUILT}/wsj.${sections}.txt.dep.pp
+	python3 ./join_sentence_from_rebuilt_data.py  ${DATA_DIR}/wsj.${sections}.txt.dep.pp ${DATA_DIR_REBUILT}/wsj.${sections}.txt.dep.pp
     done
 }
 
 mk_local_copy
 
 mkdata1
-
 
 mkdata2
