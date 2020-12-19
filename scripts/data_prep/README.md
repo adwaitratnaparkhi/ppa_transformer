@@ -1,6 +1,6 @@
 # Introduction
 
-The scripts in this directory re-build the data from (Belinkov et al, 2014), extract additional information from the raw sentence, and re-join that information with the original examples. 
+The scripts in this directory re-build a superset of the data from (Belinkov et al, 2014), extract additional information from the raw sentence, and re-join that information with the original examples. 
 
 The `extract_pp_attach_for_matlab.py` script, originally from (Belinkov et al, 2014), was modified in the following ways:
 * Ignore the word vector filter when extracting heads
