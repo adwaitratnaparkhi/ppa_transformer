@@ -125,7 +125,7 @@ def main():
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
-        cache_dir=model_args.cache_dir, use_fast=False
+        cache_dir=model_args.cache_dir, use_fast=False  # fast tokenizer raises Type error, use regular one instead
     )
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
@@ -186,63 +186,44 @@ def main():
         # so that you can share your model easily on huggingface.co/models =)
         tokenizer.save_pretrained(training_args.output_dir)
 
-    # Evaluation
-    eval_results = {}
+    # Evaluation on devset
+
     if training_args.do_eval:
-        logger.info("*** Evaluate ***")
+        logger.info("*** Development ***")
 
-        # Loop to handle MNLI double evaluation (matched, mis-matched)
-        eval_datasets = [eval_dataset]
-        if data_args.task_name == "mnli":
-            mnli_mm_data_args = dataclasses.replace(data_args, task_name="mnli-mm")
-            eval_datasets.append(
-                GlueDataset(mnli_mm_data_args, tokenizer=tokenizer, mode="dev", cache_dir=model_args.cache_dir)
-            )
+        trainer.compute_metrics = build_compute_metrics_fn(eval_dataset.args.task_name)
+        eval_result = trainer.evaluate(eval_dataset=eval_dataset)
 
-        for eval_dataset in eval_datasets:
-            trainer.compute_metrics = build_compute_metrics_fn(eval_dataset.args.task_name)
-            eval_result = trainer.evaluate(eval_dataset=eval_dataset)
+        output_eval_file = os.path.join(
+            training_args.output_dir, f"dev_results_{eval_dataset.args.task_name}.txt"
+        )
 
-            output_eval_file = os.path.join(
-                training_args.output_dir, f"eval_results_{eval_dataset.args.task_name}.txt"
-            )
+        with open(output_eval_file, "w") as writer:
+            logger.info("***** Development results {} *****".format(eval_dataset.args.task_name))
+            for key, value in eval_result.items():
+                logger.info("  %s = %s", key, value)
+                writer.write("%s = %s\n" % (key, value))
 
-            with open(output_eval_file, "w") as writer:
-                logger.info("***** Eval results {} *****".format(eval_dataset.args.task_name))
-                for key, value in eval_result.items():
-                    logger.info("  %s = %s", key, value)
-                    writer.write("%s = %s\n" % (key, value))
 
-            eval_results.update(eval_result)
+    # Evaluation on test
 
     if training_args.do_predict:
         logging.info("*** Test ***")
-        test_datasets = [test_dataset]
-        if data_args.task_name == "mnli":
-            mnli_mm_data_args = dataclasses.replace(data_args, task_name="mnli-mm")
-            test_datasets.append(
-                GlueDataset(mnli_mm_data_args, tokenizer=tokenizer, mode="test", cache_dir=model_args.cache_dir)
-            )
 
-        for test_dataset in test_datasets:
-            predictions = trainer.predict(test_dataset=test_dataset).predictions
-            if output_mode == "classification":
-                predictions = np.argmax(predictions, axis=1)
+        trainer.compute_metrics = build_compute_metrics_fn(test_dataset.args.task_name)
+        test_result = trainer.evaluate(eval_dataset=test_dataset)
 
-            output_test_file = os.path.join(
-                training_args.output_dir, f"test_results_{test_dataset.args.task_name}.txt"
-            )
+        output_test_file = os.path.join(
+            training_args.output_dir, f"test_results_{test_dataset.args.task_name}.txt"
+        )
 
-            with open(output_test_file, "w") as writer:
-                logger.info("***** Test results {} *****".format(test_dataset.args.task_name))
-                writer.write("index\tprediction\n")
-                for index, item in enumerate(predictions):
-                    if output_mode == "regression":
-                        writer.write("%d\t%3.3f\n" % (index, item))
-                    else:
-                        item = test_dataset.get_labels()[item]
-                        writer.write("%d\t%s\n" % (index, item))
-    return eval_results
+
+        with open(output_test_file, "w") as writer:
+            logger.info("***** Test results {} *****".format(test_dataset.args.task_name))
+            for key, value in test_result.items():
+                logger.info("  %s = %s", key, value)
+                writer.write("%s = %s\n" % (key, value))
+
 
 
 def _mp_fn(index):
