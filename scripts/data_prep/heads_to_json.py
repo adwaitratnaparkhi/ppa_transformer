@@ -8,7 +8,7 @@ for line in sys.stdin:
 
     example = {}
 
-    example["heads"] = tokens[1:5]
+    example["heads"] = " ".join(tokens[1:5])
     example["label"] = tokens[5]
 
     print(json.dumps(example))
