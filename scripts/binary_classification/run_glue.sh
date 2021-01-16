@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DATA_DIR=../../data/RRR1994/PPAttachData.test
+export DATA_DIR=../../data/RRR1994/PPAttachData
 
 function mk_data
 {
@@ -12,6 +12,7 @@ function mk_data
 
 mk_data
 
+# to disable GPU
 export CUDA_VISIBLE_DEVICES=""
 
 python run_glue.py \
@@ -28,4 +29,3 @@ python run_glue.py \
   --num_train_epochs 3 \
   --output_dir ./ppa.out
 
-  #--no_use_fast_tokenizer
