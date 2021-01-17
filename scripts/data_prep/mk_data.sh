@@ -11,7 +11,7 @@ BLBG_DIR="../../../pp-attachment"
 
 WSJDIR="${PENN_TREEBANK_DIR}/parsed/mrg/wsj"
 
-DATA_DIR="../../data/Belinkov2014/pp-data-english"
+DATA_DIR="../../data/BLBG2014/pp-data-english"
 DATA_DIR_REBUILT="${DATA_DIR}.rebuilt"
 
 TR_DEP="tb3.2-21.dep"
