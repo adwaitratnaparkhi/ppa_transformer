@@ -13,7 +13,7 @@ function mk_data
 mk_data
 
 # to disable GPU
-export CUDA_VISIBLE_DEVICES=""
+#export CUDA_VISIBLE_DEVICES=""
 
 python run_glue.py \
   --model_name_or_path roberta-base \
