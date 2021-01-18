@@ -27,5 +27,9 @@ python run_glue.py \
   --per_device_train_batch_size 32 \
   --learning_rate 2e-5 \
   --num_train_epochs 3 \
-  --output_dir ./ppa.out
+  --output_dir ./ppa.out \
+  --save_total_limit 1
+
+
+
 
