@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     for (h, p, ch, l, sent, hi, pi, chi) in ppdata:
         example = {}
-        example["label"] = int(l)
+        example["label"] = int(l) - 1   # move to 0-based label
 
         heads = h.split()
 

@@ -7,7 +7,7 @@ experiment_mode=3
 
 set -x
 
- export PYTHONPATH=../data_prep
+export PYTHONPATH=../data_prep
 
 python ./extract_features.py ${DATA_DIR}/wsj.2-21.txt.dep.pp ${experiment_mode} > tr.json
 python ./extract_features.py ${DATA_DIR}/wsj.23.txt.dep.pp ${experiment_mode}  > te.json
