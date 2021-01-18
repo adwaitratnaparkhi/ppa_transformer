@@ -37,6 +37,8 @@ if __name__ == "__main__":
         for index in range(len(heads), max_choices):
             example["ending" + str(index)] = "<pad>"
 
+        if exp_mode == 1:
+            example["sent1"] = ""
         if exp_mode == 2:
             example["sent1"] = h
         elif exp_mode == 3:
