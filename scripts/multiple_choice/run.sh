@@ -22,4 +22,5 @@ python ./run_swag.py \
 --output_dir ./ppa.out \
 --overwrite_output_dir \
 --do_train \
---do_eval
+--do_eval \
+--save_total_limit 1
