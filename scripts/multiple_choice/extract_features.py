@@ -31,11 +31,11 @@ if __name__ == "__main__":
         # common to all modes
         for index, head in enumerate(heads):
             triple = head + " " + p + " " + ch
-            example["ending" + str(index)] = triple
+            example["attach" + str(index)] = triple
 
         # pad the rest of choices
         for index in range(len(heads), max_choices):
-            example["ending" + str(index)] = "<pad>"
+            example["attach" + str(index)] = "<pad>"
 
         if exp_mode == 1:
             example["sent1"] = ""

@@ -13,7 +13,7 @@ export PYTHONPATH=../data_prep
 for experiment_mode in 1 2 3
 do
   python ./extract_features.py ${DATA_DIR}/wsj.2-21.txt.dep.pp ${experiment_mode} > tr.${experiment_mode}.json
-  python ./extract_features.py ${DATA_DIR}/wsj.23.txt.dep.pp ${experiment_mode}  > te.${experiment_mode}.json
+  python ./extract_features.py ${DATA_DIR}/wsj.23.txt.dep.pp ${experiment_mode}   > te.${experiment_mode}.json
 
 
   python ./run_swag.py \
@@ -30,7 +30,8 @@ do
   --max_seq_length 80 \
   --per_gpu_eval_batch_size=16 \
   --per_device_train_batch_size=16 \
-  --gradient_accumulation_steps 2
+  --gradient_accumulation_steps 2 \
+  --number_of_choices 8
 
   done
 

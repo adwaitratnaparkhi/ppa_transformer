@@ -100,6 +100,12 @@ class DataTrainingArguments:
             "efficient on GPU but very bad for TPU."
         },
     )
+    number_of_choices: int = field(
+        default=None,
+        metadata={
+            "help": "The number of choices in each example."
+        }
+    )
 
     def __post_init__(self):
         if self.train_file is not None:
@@ -262,8 +268,10 @@ def main():
     )
 
     # When using your own dataset or a different dataset from swag, you will probably need to change this.
-    num_choices=8
-    ending_names = [f"ending{i}" for i in range(num_choices)]
+    num_choices=data_args.number_of_choices
+    assert(num_choices != None)
+
+    ending_names = [f"attach{i}" for i in range(num_choices)]
     context_name = "sent1"
     question_header_name = "sent2"
 
