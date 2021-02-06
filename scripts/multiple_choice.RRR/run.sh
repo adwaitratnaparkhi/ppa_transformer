@@ -17,14 +17,16 @@ done
 
 
 
-  python ../multiple_choice/run_swag.py \
+  python ../multiple_choice.BLBG/run_swag.py \
   --model_name_or_path roberta-base \
   --train_file training.json \
   --validation_file devset.json \
+  --test_file test.json \
   --output_dir ./ppa.out \
   --overwrite_output_dir \
   --do_train \
   --do_eval \
+  --do_predict \
   --save_total_limit 1 \
   --learning_rate 5e-5 \
   --num_train_epochs 3 \

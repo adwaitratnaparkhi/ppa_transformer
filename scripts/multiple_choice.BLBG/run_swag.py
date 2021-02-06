@@ -27,7 +27,6 @@ from transformers import (
 from transformers.tokenization_utils_base import PaddingStrategy, PreTrainedTokenizerBase
 from transformers.trainer_utils import is_main_process
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -62,7 +61,7 @@ class ModelArguments:
         default=False,
         metadata={
             "help": "Will use the token generated when running `transformers-cli login` (necessary to use this script "
-            "with private models)."
+                    "with private models)."
         },
     )
 
@@ -78,6 +77,10 @@ class DataTrainingArguments:
         default=None,
         metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a text file)."},
     )
+    test_file: Optional[str] = field(
+        default=None,
+        metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a text file)."},
+    )
     overwrite_cache: bool = field(
         default=False, metadata={"help": "Overwrite the cached training and evaluation sets"}
     )
@@ -89,15 +92,15 @@ class DataTrainingArguments:
         default=None,
         metadata={
             "help": "The maximum total input sequence length after tokenization. If passed, sequences longer "
-            "than this will be truncated, sequences shorter will be padded."
+                    "than this will be truncated, sequences shorter will be padded."
         },
     )
     pad_to_max_length: bool = field(
         default=False,
         metadata={
             "help": "Whether to pad all samples to the maximum sentence length. "
-            "If False, will pad the samples dynamically when batching to the maximum length in the batch. More "
-            "efficient on GPU but very bad for TPU."
+                    "If False, will pad the samples dynamically when batching to the maximum length in the batch. More "
+                    "efficient on GPU but very bad for TPU."
         },
     )
     number_of_choices: int = field(
@@ -187,10 +190,10 @@ def main():
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     if (
-        os.path.exists(training_args.output_dir)
-        and os.listdir(training_args.output_dir)
-        and training_args.do_train
-        and not training_args.overwrite_output_dir
+            os.path.exists(training_args.output_dir)
+            and os.listdir(training_args.output_dir)
+            and training_args.do_train
+            and not training_args.overwrite_output_dir
     ):
         raise ValueError(
             f"Output directory ({training_args.output_dir}) already exists and is not empty."
@@ -232,6 +235,8 @@ def main():
             data_files["train"] = data_args.train_file
         if data_args.validation_file is not None:
             data_files["validation"] = data_args.validation_file
+        if data_args.test_file is not None:
+            data_files["test"] = data_args.test_file
         extension = data_args.train_file.split(".")[-1]
         datasets = load_dataset(extension, data_files=data_files)
     else:
@@ -268,8 +273,8 @@ def main():
     )
 
     # When using your own dataset or a different dataset from swag, you will probably need to change this.
-    num_choices=data_args.number_of_choices
-    assert(num_choices != None)
+    num_choices = data_args.number_of_choices
+    assert (num_choices != None)
 
     ending_names = [f"attach{i}" for i in range(num_choices)]
     context_name = "sent1"
@@ -296,7 +301,8 @@ def main():
             padding="max_length" if data_args.pad_to_max_length else False,
         )
         # Un-flatten
-        return {k: [v[i : i + num_choices] for i in range(0, len(v), num_choices)] for k, v in tokenized_examples.items()}
+        return {k: [v[i: i + num_choices] for i in range(0, len(v), num_choices)] for k, v in
+                tokenized_examples.items()}
 
     tokenized_datasets = datasets.map(
         preprocess_function,
@@ -348,14 +354,26 @@ def main():
     # Evaluation
     results = {}
     if training_args.do_eval:
-        logger.info("*** Evaluate ***")
+        logger.info("*** Evaluate on validation ***")
 
         results = trainer.evaluate()
 
         output_eval_file = os.path.join(training_args.output_dir, "eval_results_swag.txt")
         if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
-                logger.info("***** Eval results *****")
+                logger.info("***** Eval results on validation *****")
+                for key, value in sorted(results.items()):
+                    logger.info(f"  {key} = {value}")
+                    writer.write(f"{key} = {value}\n")
+
+    if training_args.do_predict:
+        logger.info("*** Evaluate on test ***")
+        results = trainer.evaluate(eval_dataset=tokenized_datasets["test"])
+
+        output_eval_file = os.path.join(training_args.output_dir, "test_results_swag.txt")
+        if trainer.is_world_process_zero():
+            with open(output_eval_file, "w") as writer:
+                logger.info("***** Eval results on test *****")
                 for key, value in sorted(results.items()):
                     logger.info(f"  {key} = {value}")
                     writer.write(f"{key} = {value}\n")
