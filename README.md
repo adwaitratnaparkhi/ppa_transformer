@@ -18,7 +18,8 @@ conda create -n ppa python=3.8
 
 conda activate ppa
 
-conda install pytorch
+# from pytorch.org
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch 
 
 pip install transformers==4.2.1
 
