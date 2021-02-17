@@ -48,8 +48,9 @@ def read_multichoice_data(prefix, use_sentences: bool):
             example['children_index'] = chids[i]
         else:
             head_words_str = ' '.join(heads[i])
-            example['sentence'] = f'{head_words_str} {preps[i]} {children[i]}'
             head_idx = list(range(len(heads[i])))
+
+            example['sentence'] = f'{head_words_str} {preps[i]} {children[i]}'
             example['heads_index'] = head_idx
             example['pp_index'] = head_idx[-1] + 1
             example['children_index'] = head_idx[-1] + 2
