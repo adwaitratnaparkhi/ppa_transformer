@@ -118,11 +118,14 @@ class RRRAttachment(BertPreTrainedModel):
         logits = self.classifier(combined_emdb).squeeze(-1)
         return get_loss(logits, n_heads, batch_size, labels)
 
-def train(train_dataset, eval_dataset, modeloutput, is_binary):
+def train(datasets, modeloutput, is_binary):
     if is_binary:
         model = RRRAttachment.from_pretrained('roberta-base')
+        train_dataset, eval_dataset, test_dataset = datasets
     else:
         model = BLBGAttachment.from_pretrained('roberta-base')
+        train_dataset, eval_dataset = datasets
+        test_dataset = None
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'Number of trainable parameter: {n_params}')
     training_args = TrainingArguments(
@@ -148,7 +151,10 @@ def train(train_dataset, eval_dataset, modeloutput, is_binary):
     trainer.train()
     trainer.save_model()
     result = trainer.evaluate()
-    print(result)
+    print('Dev set result: ', result)
+    if test_dataset is not None:
+        result = trainer.evaluate(test_dataset)
+        print('Test set result: ', result)
 
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
@@ -163,7 +169,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parsing experiment files')
     parser.add_argument("-t", dest="trainfile", required=True,
                         help="train file path")
-    parser.add_argument("-d", dest="testfile", required=True,
+    parser.add_argument("-d", dest="devfile", required=True,
+                        help="dev file path")
+    parser.add_argument("-e", dest="testfile", required=False,
                         help="test file path")
     parser.add_argument("-o", dest="modeloutput", required=True,
                         help="model output file path")
@@ -173,12 +181,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     trainfile = os.path.expanduser(args.trainfile)
-    testfile = os.path.expanduser(args.testfile)
+    devfile = os.path.expanduser(args.devfile)
     modeloutput = os.path.expanduser(args.modeloutput)
 
     train_dataset = UnpooledDataset(trainfile)
-    eval_dataset = UnpooledDataset(testfile)
-    train(train_dataset, eval_dataset, modeloutput, args.is_binary)
+    eval_dataset = UnpooledDataset(devfile)
+    datasets = (train_dataset, eval_dataset)
+
+    if args.is_binary:
+        testfile = os.path.expanduser(args.testfile)
+        test_dataset = UnpooledDataset(testfile)
+        datasets += (test_dataset,)
+
+    train(datasets, modeloutput, args.is_binary)
 
 
 
