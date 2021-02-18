@@ -64,12 +64,12 @@ def read_binary_data(filepath):
     pp_data = []
     for (_, v, n, p, n2, label) in data:
         example = {}
-        full_sentence = f"{n} {v} {p} {n2}"
+        full_sentence = f"{v} {n} {p} {n2}"
         example['sentence'] = full_sentence.split()
         example['heads_index'] = [0, 1]
         example['pp_index'] = 2
         example['children_index'] = 3
-        example['label'] = 0 if label == "N" else 1
+        example['label'] = 0 if label == "V" else 1
         pp_data.append(example)
     return pp_data
 
