@@ -16,4 +16,5 @@ python -m extract_features \
 python -m unpooled_train \
 -t ~/Downloads/tr.jsonl \
 -d ~/Downloads/te.jsonl \
--o ~/Downloads/
+-o ~/Downloads/ \
+-b
