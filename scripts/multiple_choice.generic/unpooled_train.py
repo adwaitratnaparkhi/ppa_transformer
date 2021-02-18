@@ -106,13 +106,13 @@ class PPAttachmentBert(BertPreTrainedModel):
         best_scores, pred = logits.max(dim=1)
         return (loss, pred)
 
-def train(train_dataset, eval_dataset, is_ranking):
+def train(train_dataset, eval_dataset, modeloutput, is_ranking):
     model = PPAttachmentBert.from_pretrained('roberta-base')
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'Number of trainable parameter: {n_params}')
     model.is_ranking = is_ranking
     training_args = TrainingArguments(
-        output_dir=f'./results_{int(time.time())}',  # output directory
+        output_dir=f'{modeloutput}/results_{int(time.time())}',  # output directory
         num_train_epochs=3,  # total # of training epochs
         per_device_train_batch_size=16,  # batch size per device during training
         per_device_eval_batch_size=16,  # batch size for evaluation
@@ -151,6 +151,8 @@ if __name__ == '__main__':
                         help="train file path")
     parser.add_argument("-d", dest="testfile", required=True,
                         help="test file path")
+    parser.add_argument("-o", dest="modeloutput", required=True,
+                        help="model output file path")
     parser.add_argument('-r', dest='ranking_loss', action='store_true',
                         default = False,
                         help="if ranking loss enabled")
@@ -158,10 +160,12 @@ if __name__ == '__main__':
 
     trainfile = os.path.expanduser(args.trainfile)
     testfile = os.path.expanduser(args.testfile)
+    modeloutput = os.path.expanduser(args.modeloutput)
     is_ranking = args.ranking_loss
+
     train_dataset = UnpooledDataset(trainfile)
     eval_dataset = UnpooledDataset(testfile)
-    train(train_dataset, eval_dataset, is_ranking)
+    train(train_dataset, eval_dataset, modeloutput, is_ranking)
 
 
 

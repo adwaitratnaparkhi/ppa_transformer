@@ -42,6 +42,7 @@ class UnpooledDataset(Dataset):
                     curr_mask += [0]*(len(subwords) - 1)
                 start_idx_mask.extend(curr_mask)
                 all_ids.extend(subwords)
+                assert len(start_idx_mask) == len(all_ids)
             special_token_mask = tokenizer.get_special_tokens_mask(all_ids)
 
             prefix_offset = 0

@@ -19,7 +19,7 @@ def read_file(filename, is_numeric=False, is_split=False):
     if is_split:
         data = [t.split() for t in data]
     if is_numeric:
-        data = [[int(l) for l in t.split()] if is_split else int(t) for t in data]
+        data = [[int(l) for l in t] if is_split else int(t) for t in data]
     return data
 
 def read_multichoice_data(prefix, use_sentences: bool):
@@ -30,7 +30,7 @@ def read_multichoice_data(prefix, use_sentences: bool):
 
     if use_sentences:
         sentences = read_file(get_filename(prefix, "sentences"), is_numeric=False, is_split=True)
-        hids = read_file(get_filename(prefix, "id.heads.words"), is_numeric=True)
+        hids = read_file(get_filename(prefix, "id.heads.words"), is_numeric=True, is_split=True)
         pids = read_file(get_filename(prefix, "id.preps.words"), is_numeric=True)
         chids = read_file(get_filename(prefix, "id.children.words"), is_numeric=True)
     else:
@@ -49,8 +49,8 @@ def read_multichoice_data(prefix, use_sentences: bool):
         else:
             head_words_str = ' '.join(heads[i])
             head_idx = list(range(len(heads[i])))
-
-            example['sentence'] = f'{head_words_str} {preps[i]} {children[i]}'
+            full_sentence = f'{head_words_str} {preps[i]} {children[i]}'
+            example['sentence'] = full_sentence.split()
             example['heads_index'] = head_idx
             example['pp_index'] = head_idx[-1] + 1
             example['children_index'] = head_idx[-1] + 2
@@ -64,10 +64,11 @@ def read_binary_data(filepath):
     pp_data = []
     for (_, v, n, p, n2, label) in data:
         example = {}
-        example['sentence'] = f"{n} {v} {p} {n2}"
+        full_sentence = f"{n} {v} {p} {n2}"
+        example['sentence'] = full_sentence.split()
         example['heads_index'] = [0, 1]
-        example['pp_index'] = [2]
-        example['children_index'] = [3]
+        example['pp_index'] = 2
+        example['children_index'] = 3
         example['label'] = 0 if label == "N" else 1
         pp_data.append(example)
     return pp_data
@@ -88,7 +89,7 @@ if __name__ == "__main__":
 
     filepath = os.path.expanduser(args.infile)
     output_file = os.path.expanduser(args.outfile)
-    exp_mode = mode_array[args.mode]
+    exp_mode = mode_array[args.mode-1]
     if exp_mode == EXP_MODE.BINARY:
         pp_data = read_binary_data(filepath)
     else:
