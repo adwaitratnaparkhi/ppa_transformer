@@ -9,10 +9,21 @@ python -m extract_features \
 -m 1
 #process test data
 python -m extract_features \
+-i ~/ppa_transformer/data/RRR1994/PPAttachData/devset \
+-o ~/Downloads/de.jsonl \
+-m 1
+#process test data
+python -m extract_features \
 -i ~/ppa_transformer/data/RRR1994/PPAttachData/test \
 -o ~/Downloads/te.jsonl \
 -m 1
 #run training
+#python -m unpooled_train \
+#-t ~/Downloads/tr.jsonl \
+#-d ~/Downloads/de.jsonl \
+#-o ~/Downloads/ \
+#-b
+
 python -m unpooled_train \
 -t ~/Downloads/tr.jsonl \
 -d ~/Downloads/te.jsonl \
