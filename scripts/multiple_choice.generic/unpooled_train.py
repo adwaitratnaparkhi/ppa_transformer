@@ -57,15 +57,15 @@ def get_loss(logits, n_heads, batch_size, labels):
     best_scores, pred = logits.max(dim=1)
     return (loss, pred)
 
-class BLBGAttachment(BertPreTrainedModel):
+class AttachmentModel(BertPreTrainedModel):
     config_class = RobertaConfig
     base_model_prefix = "roberta"
     def __init__(self, config):
-        super(BLBGAttachment, self).__init__(config)
+        super(AttachmentModel, self).__init__(config)
         self.roberta = RobertaModel(config)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.hidden = nn.Linear(3 * config.hidden_size, config.hidden_size)
-        self.classifier = nn.Linear(config.hidden_size, 1)
+        self.classifier = nn.Linear(4 * config.hidden_size, 1)
         self.init_weights()
         self._is_ranking = False
 
@@ -86,46 +86,14 @@ class BLBGAttachment(BertPreTrainedModel):
                       batch_size)
         logits = self.hidden(combined_emdb)
         logits = torch.tanh(logits)
+        #skip connection
+        logits = torch.cat([combined_emdb, logits], 2)
         logits = self.classifier(logits).squeeze(-1)
         return get_loss(logits, n_heads, batch_size, labels)
 
-class RRRAttachment(BertPreTrainedModel):
-    config_class = RobertaConfig
-    base_model_prefix = "roberta"
-    def __init__(self, config):
-        super(RRRAttachment, self).__init__(config)
-        self.roberta = RobertaModel(config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(3 * config.hidden_size, 1)
-        self.init_weights()
-        self._is_ranking = False
-
-    def forward(self, input_ids, attention_mask,
-                head_idx, start_idx_mask, pp_idx, children_idx,
-                n_heads, labels):
-        batch_size = input_ids.size(0)
-        outputs = self.roberta(
-            input_ids,
-            attention_mask=attention_mask,
-            output_attentions=True,
-            output_hidden_states=True,
-            return_dict=True
-        )
-        token_embedding = self.dropout(outputs.last_hidden_state)
-        combined_emdb = extract_embedding(token_embedding, start_idx_mask,
-                      head_idx, pp_idx, children_idx,
-                      batch_size)
-        logits = self.classifier(combined_emdb).squeeze(-1)
-        return get_loss(logits, n_heads, batch_size, labels)
-
-def train(datasets, modeloutput, is_binary):
-    if is_binary:
-        model = RRRAttachment.from_pretrained('roberta-base')
-        train_dataset, eval_dataset, test_dataset = datasets
-    else:
-        model = BLBGAttachment.from_pretrained('roberta-base')
-        train_dataset, eval_dataset = datasets
-        test_dataset = None
+def train(datasets, modeloutput):
+    model = AttachmentModel.from_pretrained('roberta-base')
+    train_dataset, eval_dataset, test_dataset = datasets
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'Number of trainable parameter: {n_params}')
     training_args = TrainingArguments(
@@ -172,12 +140,10 @@ if __name__ == '__main__':
     parser.add_argument("-d", dest="devfile", required=True,
                         help="dev file path")
     parser.add_argument("-e", dest="testfile", required=False,
+                        default=None,
                         help="test file path")
     parser.add_argument("-o", dest="modeloutput", required=True,
                         help="model output file path")
-    parser.add_argument('-b', dest='is_binary', action='store_true',
-                        default = False,
-                        help="if binary model enabled")
     args = parser.parse_args()
 
     trainfile = os.path.expanduser(args.trainfile)
@@ -187,13 +153,13 @@ if __name__ == '__main__':
     train_dataset = UnpooledDataset(trainfile)
     eval_dataset = UnpooledDataset(devfile)
     datasets = (train_dataset, eval_dataset)
-
-    if args.is_binary:
+    test_dataset = None
+    if args.testfile is not None:
         testfile = os.path.expanduser(args.testfile)
         test_dataset = UnpooledDataset(testfile)
-        datasets += (test_dataset,)
 
-    train(datasets, modeloutput, args.is_binary)
+    datasets += (test_dataset,)
+    train(datasets, modeloutput)
 
 
 

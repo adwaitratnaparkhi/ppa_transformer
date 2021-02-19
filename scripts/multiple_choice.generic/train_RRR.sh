@@ -22,5 +22,4 @@ python -m unpooled_train \
 -t ~/Downloads/tr.jsonl \
 -d ~/Downloads/de.jsonl \
 -e ~/Downloads/te.jsonl \
--o ~/Downloads/ \
--b
+-o ~/Downloads/
