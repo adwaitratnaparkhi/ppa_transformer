@@ -30,19 +30,19 @@ def extract_embedding(token_embedding, start_idx_mask,
     embd_split = torch.split(embd_selected, start_idx_lens.tolist())
     embd_padded = pad_sequence(embd_split, batch_first=True, padding_value=0)
 
-    # get children and pp
-    pp_emdb = embd_padded[torch.arange(batch_size), pp_idx]
-    children_emdb = embd_padded[torch.arange(batch_size), children_idx]
+    # get children and pp embedding
+    pp_embd = embd_padded[torch.arange(batch_size), pp_idx]
+    children_embd = embd_padded[torch.arange(batch_size), children_idx]
 
     # extract head tokens
     head_idx_expaded = head_idx.unsqueeze(-1).repeat(1, 1, embd_padded.size()[2])
     head_padded = torch.gather(embd_padded, 1, head_idx_expaded)
 
     # combined embedding
-    pp_emdb_expanded = pp_emdb.unsqueeze(1).repeat(1, head_padded.size()[1], 1)
-    children_emdb_expanded = children_emdb.unsqueeze(1).repeat(1, head_padded.size()[1], 1)
-    combined_emdb = torch.cat([head_padded, pp_emdb_expanded, children_emdb_expanded], 2)
-    return combined_emdb
+    pp_embd_expanded = pp_embd.unsqueeze(1).repeat(1, head_padded.size()[1], 1)
+    children_embd_expanded = children_embd.unsqueeze(1).repeat(1, head_padded.size()[1], 1)
+    combined_embd = torch.cat([head_padded, pp_embd_expanded, children_embd_expanded], 2)
+    return combined_embd
 
 def get_loss(logits, n_heads, batch_size, labels):
     # get head_mask
@@ -81,13 +81,13 @@ class AttachmentModel(BertPreTrainedModel):
             return_dict=True
         )
         token_embedding = self.dropout(outputs.last_hidden_state)
-        combined_emdb = extract_embedding(token_embedding, start_idx_mask,
+        combined_embd = extract_embedding(token_embedding, start_idx_mask,
                       head_idx, pp_idx, children_idx,
                       batch_size)
-        logits = self.hidden(combined_emdb)
+        logits = self.hidden(combined_embd)
         logits = torch.tanh(logits)
         #skip connection
-        logits = torch.cat([combined_emdb, logits], 2)
+        logits = torch.cat([combined_embd, logits], 2)
         logits = self.classifier(logits).squeeze(-1)
         return get_loss(logits, n_heads, batch_size, labels)
 
@@ -105,7 +105,7 @@ def train(datasets, modeloutput):
         weight_decay=0.01,  # strength of weight decay
         logging_dir=f'{modeloutput}/logs',  # directory for storing logs
         save_total_limit=1,
-        seed = 42
+        seed=42
     )
     # Initialize our Trainer
     trainer = Trainer(

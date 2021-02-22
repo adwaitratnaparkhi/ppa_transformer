@@ -55,7 +55,15 @@ class UnpooledDataset(Dataset):
             input_ids = sentence_inputs["input_ids"]
             attention_mask = sentence_inputs["attention_mask"]
             max_seq_len = max(max_seq_len, len(input_ids))
-
+            #######
+            #test the tokenization
+            inputs = tokenizer(
+                text=' '.join(sentence),
+                add_special_tokens=True
+            )
+            assert inputs["input_ids"] == input_ids
+            assert inputs["attention_mask"] == attention_mask
+            #######
             datum = {
                 'input_ids': torch.LongTensor(input_ids),
                 'attention_mask': torch.LongTensor(attention_mask),
