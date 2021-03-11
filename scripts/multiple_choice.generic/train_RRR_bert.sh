@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -x
-DATA_DIR=~/ppa_transformer/data/RRR1994/PPAttachData
+DATA_DIR=../../data/RRR1994/PPAttachData
 
 #process training data
 python -m extract_features \
@@ -25,4 +25,5 @@ python -m unpooled_train \
 -t tr.jsonl \
 -d de.jsonl \
 -e te.jsonl \
--o ./
+-o ./ \
+-m 2

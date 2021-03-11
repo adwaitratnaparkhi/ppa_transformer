@@ -2,7 +2,7 @@
 
 set -x
 
-DATA_DIR=~/pp-attachment/dataset/Belinkov2014/pp-data-english/
+DATA_DIR=../../data/BLBG2014/pp-data-english
 
 #process training data
 python -m extract_features \
@@ -20,4 +20,5 @@ python -m extract_features \
 python -m unpooled_train \
 -t tr.jsonl \
 -d te.jsonl \
--o ./
+-o ./ \
+-m 2
