@@ -27,8 +27,7 @@ if __name__ == "__main__":
         example["attach0"] = f"{n} {p} {n2}"
         example["attach1"] = f"{v} {p} {n2}"
 
-        example["sent1"] = f"{v} {n} {p} {n2}"
-        #example["sent1"] = ""
+        example["sent1"] = f"{v} {n}"
         example["sent2"] = ""
 
         print(json.dumps(example))
