@@ -12,9 +12,9 @@ do
   python ./extract_features.py ${DATA_DIR}/wsj.2-21.txt.dep.pp ${experiment_mode} > tr.${experiment_mode}.json
   python ./extract_features.py ${DATA_DIR}/wsj.23.txt.dep.pp ${experiment_mode}   > te.${experiment_mode}.json
 
-output_dir=results_$(date +'%s')
+  output_dir=results_$(date +'%s')
 
-python ./run_swag.py \
+  python ./run_swag.py \
   --model_name_or_path roberta-base \
   --train_file tr.${experiment_mode}.json \
   --validation_file te.${experiment_mode}.json \
