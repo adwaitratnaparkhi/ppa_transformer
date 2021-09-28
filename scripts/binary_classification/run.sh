@@ -15,8 +15,10 @@ mk_data
 # to disable GPU
 #export CUDA_VISIBLE_DEVICES=""
 
+model=roberta-base
+
 python run_glue.py \
-  --model_name_or_path roberta-base \
+  --model_name_or_path ${model} \
   --train_file training.json \
   --validation_file devset.json \
   --test_file test.json \
@@ -27,7 +29,7 @@ python run_glue.py \
   --per_device_train_batch_size 32 \
   --learning_rate 2e-5 \
   --num_train_epochs 3 \
-  --output_dir ./ppa.out \
+  --output_dir ./ppa.out.${model} \
   --save_total_limit 1
 
 

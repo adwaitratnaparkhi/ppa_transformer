@@ -3,9 +3,6 @@
 DATA_DIR=../../data/RRR1994/PPAttachData
 
 
-# to disable GPU
-#export CUDA_VISIBLE_DEVICES=""
-
 set -x
 
 
@@ -15,14 +12,15 @@ do
 done
 
 
-
+model=roberta-base
+output_dir=results_$(date +'%s')
 
   python ../multiple_choice.BLBG/run_swag.py \
-  --model_name_or_path roberta-base \
+  --model_name_or_path ${model} \
   --train_file training.json \
   --validation_file devset.json \
   --test_file test.json \
-  --output_dir ./ppa.out \
+  --output_dir ${output_dir} \
   --overwrite_output_dir \
   --do_train \
   --do_eval \
