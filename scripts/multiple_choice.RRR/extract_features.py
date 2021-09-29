@@ -18,11 +18,11 @@ if __name__ == "__main__":
         (num, v, n, p, n2, label) = ppinstance.rstrip().split()
 
         #
-        # V --> label 1
-        # N --> label 0
+        # V --> label 0
+        # N --> label 1
         #
         assert(label == "N" or label == "V")
-        example["label"] = 0 if label == "N" else 1
+        example["label"] = 0 if label == "V" else 1
 
         example["attach0"] = f"{n} {p} {n2}"
         example["attach1"] = f"{v} {p} {n2}"
