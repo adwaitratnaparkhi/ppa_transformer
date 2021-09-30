@@ -151,8 +151,22 @@ def train(datasets, modeloutput, model):
     result = trainer.evaluate()
     print('Dev set result: ', result)
     if test_dataset is not None:
-        result = trainer.evaluate(test_dataset)
-        print('Test set result: ', result)
+
+        predict_output = trainer.predict(test_dataset=test_dataset)
+        results = predict_output.metrics
+        #predictions = np.argmax(predict_output.predictions, axis=1)
+        predictions = predict_output.predictions
+
+        output_eval_file = os.path.join(training_args.output_dir, "test_results.txt")
+        output_predictions_file = os.path.join(training_args.output_dir, "test_output.txt")
+
+        with open(output_eval_file, "w") as writer:
+            for key, value in sorted(results.items()):
+                writer.write(f"{key} = {value}\n")
+
+        with open(output_predictions_file, "w") as writer:
+            for index, item in enumerate(predictions):
+                writer.write(f"{index}\t{item}\n")
 
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()

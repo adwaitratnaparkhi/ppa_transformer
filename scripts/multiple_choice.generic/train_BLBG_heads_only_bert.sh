@@ -20,5 +20,6 @@ python -m extract_features \
 python -m unpooled_train \
 -t tr.jsonl \
 -d te.jsonl \
+-e te.jsonl \
 -o ./ \
 -m 2

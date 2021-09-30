@@ -368,15 +368,24 @@ def main():
 
     if training_args.do_predict:
         logger.info("*** Evaluate on test ***")
-        results = trainer.evaluate(eval_dataset=tokenized_datasets["test"])
 
-        output_eval_file = os.path.join(training_args.output_dir, "test_results_swag.txt")
+        predict_output = trainer.predict(test_dataset=tokenized_datasets["test"])
+        results = predict_output.metrics
+        predictions = np.argmax(predict_output.predictions, axis=1)
+
+        output_eval_file = os.path.join(training_args.output_dir, "test_results.txt")
+        output_predictions_file = os.path.join(training_args.output_dir, "test_output.txt")
+
         if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
                 logger.info("***** Eval results on test *****")
                 for key, value in sorted(results.items()):
                     logger.info(f"  {key} = {value}")
                     writer.write(f"{key} = {value}\n")
+
+            with open(output_predictions_file, "w") as writer:
+                for index, item in enumerate(predictions):
+                    writer.write(f"{index}\t{item}\n")
 
     return results
 
