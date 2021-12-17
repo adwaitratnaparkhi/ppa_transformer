@@ -31,7 +31,7 @@ pip install datasets
 ```
 # Training and evaluating the models
 
-The following shell script will reproduce the experiments in the above paper. It will call the scripts in various sub-directories. 
+The following shell script will reproduce the experiments in the above paper. It will call the scripts in various sub-directories. Make sure you have built the BLBG data before calling this script!
 ```
 cd scripts
 ./run_all.sh
