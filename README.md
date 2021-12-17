@@ -3,7 +3,7 @@
 This repository contains scripts to create transformer-based deep learning models for the prepositional phrase attachment problem, as described in:
 
 Adwait Ratnaparkhi and Atul Kumar. (2021). Resolving Prepositional Phrase Attachment Ambiguities with Contextualized Word Embeddings. In Proceedings of 
-ICON-2021: 18th International Conference on Natural Language Processing. National Institute of Technology, Silchar, India.
+ICON-2021: 18th International Conference on Natural Language Processing. National Institute of Technology, Silchar, India. December 16-19, 2021
 
 
 # Building the data
@@ -40,8 +40,7 @@ Results will be stored in a directory named `results_XXXXXXX` in the sub-directo
 
 # References
 
-[1] Yonatan Belinkov, Tao Lei, Regina Barzilay, and Amir Globerson. 2014. Exploring compositional architectures and word vector representations for prepositional phrase attachment. Transactions of the Asso- ciation for Computational Linguistics, 2:561–572.
-
-[2] Adwait Ratnaparkhi, Jeff Reynar, and Salim Roukos. 1994. A maximum entropy model for prepositional phrase attachment. In HUMAN LANGUAGE TECHNOLOGY: Proceedings of a Workshop held at Plainsboro, New Jersey, March 8-11, 1994.
+[1] Yonatan Belinkov, Tao Lei, Regina Barzilay, and Amir Globerson. (2014). Exploring compositional architectures and word vector representations for prepositional phrase attachment. Transactions of the Association for Computational Linguistics, 2:561–572.
+[2] Adwait Ratnaparkhi, Jeff Reynar, and Salim Roukos. (1994). A maximum entropy model for prepositional phrase attachment. In HUMAN LANGUAGE TECHNOLOGY: Proceedings of a Workshop held at Plainsboro, New Jersey, March 8-11, 1994.
 
 
