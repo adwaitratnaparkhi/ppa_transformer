@@ -11,14 +11,17 @@ function cleanup {
 
 set -x
 
+# HuggingFace baseline on RRR
 cd multiple_choice.RRR
 ./run.sh
 cleanup
 
+# HuggingFace baseline on BLBG
 cd ../multiple_choice.BLBG
 ./run.sh
 cleanup
 
+# FTHA on RRR using BERT/RoBERTa, BLBG using BERT/RoBERTa, heads only and full sentence
 cd ../multiple_choice.generic
 
 ./train_BLBG_full_sentence_bert.sh
