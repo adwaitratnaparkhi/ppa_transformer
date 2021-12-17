@@ -1,6 +1,10 @@
 # Introduction
 
-This repository contains scripts to create transformer-based deep learning models for the prepositional phrase attachment problem. 
+This repository contains scripts to create transformer-based deep learning models for the prepositional phrase attachment problem, as described in:
+
+Adwait Ratnaparkhi and Atul Kumar. (2021). Resolving Prepositional Phrase Attachment Ambiguities with Contextualized Word Embeddings. In Proceedings of 
+ICON-2021: 18th International Conference on Natural Language Processing. National Institute of Technology, Silchar, India.
+
 
 # Building the data
 
@@ -25,34 +29,15 @@ pip install transformers==4.2.1
 
 pip install datasets
 ```
-# Training and evaluating the model
+# Training and evaluating the models
 
-* Binary classification
+The following shell script will reproduce the experiments in the above paper. It will call the scripts in various sub-directories. 
 ```
-cd scripts/binary_classification
-./run.sh
-# Evaluation stats should be printed to console
+cd scripts
+./run_all.sh
 ```
-    
-* Multiple choice classification
-   * Follow instructions in previous section to build the data, before trying this section
-```
-cd scripts/multiple_choice
-./run.sh
-# Evaluation stats should be printed to console
-```
-   
-# Results
+Results will be stored in a directory named `results_XXXXXXX` in the sub-directory, in a file named `test_results.txt`
 
-* Binary classification
-   * Development set: 89.5%
-   * Test set: 88.7%
-    
-* Multiple choice
-   * Triple only: 83.1%
-   * Triple + heads: 91.5%
-   * Triple + full sentence: 94.5%
-   
 # References
 
 [1] Yonatan Belinkov, Tao Lei, Regina Barzilay, and Amir Globerson. 2014. Exploring compositional architectures and word vector representations for prepositional phrase attachment. Transactions of the Asso- ciation for Computational Linguistics, 2:561–572.
