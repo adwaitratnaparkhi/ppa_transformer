@@ -41,6 +41,7 @@ Results will be stored in a directory named `results_XXXXXXX` in the sub-directo
 # References
 
 [1] Yonatan Belinkov, Tao Lei, Regina Barzilay, and Amir Globerson. (2014). Exploring compositional architectures and word vector representations for prepositional phrase attachment. Transactions of the Association for Computational Linguistics, 2:561–572.
+
 [2] Adwait Ratnaparkhi, Jeff Reynar, and Salim Roukos. (1994). A maximum entropy model for prepositional phrase attachment. In HUMAN LANGUAGE TECHNOLOGY: Proceedings of a Workshop held at Plainsboro, New Jersey, March 8-11, 1994.
 
 
